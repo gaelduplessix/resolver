@@ -38,6 +38,7 @@ let isPossibleBoard = (board, pieces) =>
 let rec solve = (board, availablePieces) =>
   if (List.length(availablePieces) == 0) {
     print_endline("DONE");
+    print_endline(Board.to_string(board));
     true
   } else {
     availablePieces

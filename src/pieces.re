@@ -101,6 +101,25 @@ let basePieces =
   |> List.map((piece) => piece |> List.map(Array.of_list) |> Array.of_list)
   |> Array.of_list;
 
+/* terminal color code for a piece index */
+let color = (id) =>
+  switch id {
+  | 1 => 33
+  | 2 => 94
+  | 3 => 32
+  | 4 => 92
+  | 5 => 31
+  | 6 => 34
+  | 7 => 34
+  | 8 => 93
+  | 9 => 36
+  | 10 => 37
+  | 11 => 95
+  | 12 => 31
+  /* default: foreground color */
+  | _ => 39
+  };
+
 let string_of_piece = (piece) =>
   piece
   |> Array.map((row) => row |> Array.map(string_of_int) |> Array.to_list |> String.concat(","))

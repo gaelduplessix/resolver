@@ -77,23 +77,31 @@ let remove = (board, piece, (posX, posY)) =>
        ()
      );
 
-let print = (board) =>
+let to_string = (board) =>
   board
-  |> Array.map(
-       (row) =>
-         row
-         |> Array.map(
-              (cell) => {
-                let s =
-                  switch cell {
-                  | Empty => "  "
-                  | Piece(id) => string_of_int(id)
-                  };
-                if (String.length(s) < 2) {
-                  "0" ++ s
-                } else {
-                  s
-                }
-              }
-            )
+  |> Array.fold_left(
+       (str, row) =>
+         str
+         ++ (
+           row
+           |> Array.fold_left(
+                (str, cell) => {
+                  let (s, cellColor) =
+                    switch cell {
+                    | Empty => ("  ", 39)
+                    | Piece(id) => (string_of_int(id), Pieces.color(id))
+                    };
+                  let cellNum =
+                    if (String.length(s) < 2) {
+                      "0" ++ s
+                    } else {
+                      s
+                    };
+                  str ++ "\027[" ++ string_of_int(cellColor) ++ "m" ++ cellNum ++ "\027[0m "
+                },
+                ""
+              )
+         )
+         ++ "\n",
+       ""
      );
