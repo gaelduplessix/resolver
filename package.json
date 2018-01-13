@@ -7,9 +7,12 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build"
+    "build": "react-scripts build",
+    "build-native": "bsb -make-world"
   },
   "devDependencies": {
+    "bs-platform": "^2.1.0",
+    "bsb-native": "bsansouci/bsb-native#2.1.1",
     "bs-jest": "^0.3.2",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",

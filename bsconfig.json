@@ -1,17 +1,12 @@
 {
-  "name": "reason-scripts",
-  "sources": [
-    "src"
+  "name": "NameOfLibrary",
+  "sources": "src",
+  "entries": [
+    {
+      "backend": "native",
+      "main-module": "IndexNative"
+    }
   ],
-  "bs-dependencies": [
-    "reason-react",
-    "bs-jest"
-  ],
-  "reason": {
-    "react-jsx": 2
-  },
-  "bsc-flags": [
-    "-bs-super-errors"
-  ],
+  "bsc-flags": ["-bs-super-errors"],
   "refmt": 3
 }

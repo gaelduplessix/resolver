@@ -37,7 +37,7 @@ let isPossibleBoard = (board, pieces) =>
 
 let rec solve = (board, availablePieces) =>
   if (List.length(availablePieces) == 0) {
-    Js.log2("DONE!", Board.print(board));
+    print_endline("DONE");
     true
   } else {
     availablePieces
@@ -92,8 +92,8 @@ and forEachPosition = (found, board, piece, availablePieces) =>
                } else {
                  /* recurse */
                  itCount := itCount^ + 1;
-                 if (itCount^ mod 10 == 0) {
-                   Js.log2("pieces left:", List.length(availablePieces))
+                 if (itCount^ mod 10000 == 0) {
+                   print_endline("pieces left: " ++ string_of_int(List.length(availablePieces)))
                  } else {
                    ()
                  };
