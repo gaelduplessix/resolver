@@ -1,6 +1,4 @@
-let itCount = ref(0);
-
-/* this is supposed to improve perf, but it doesn't :( */
+/* bail-out if board cannot be solved at this point */
 let isPossibleBoard = (board, pieces) =>
   /* for each spot in the board */
   board
@@ -40,71 +38,59 @@ let rec solve = (board, availablePieces) =>
     print_endline("DONE");
     print_endline(Board.to_string(board));
     true
+  } else if (! isPossibleBoard(board, availablePieces)) {
+    false
   } else {
-    availablePieces
-    /* for each available piece */
-    |> List.fold_left(
-         (found, pieceTransforms) =>
-           if (found) {
-             true
-           } else {
-             let newPieces = availablePieces |> List.filter((p) => p !== pieceTransforms);
-             pieceTransforms
-             /* for each piece transform */
+    print_endline(Board.to_string(board));
+    print_int(List.length(availablePieces));
+    print_endline(" --------------------");
+    /* for each position on the board */
+    board
+    |> Board.reduce(
+         (found, x, y, currCell) =>
+           switch currCell {
+           /* cell used: ignore */
+           | Board.Piece(_) => found
+           | Empty =>
+             /* try to insert a piece at this position */
+             availablePieces
              |> List.fold_left(
-                  (found, piece) =>
-                    if (found) {
-                      true
-                    } else {
-                      /* for each position in the board */
-                      forEachPosition(
-                        found,
-                        board,
-                        piece,
-                        newPieces
-                      )
+                  (found, pieceTransforms) =>
+                    found
+                    /* for each transform */
+                    || {
+                      let newPieces = availablePieces |> List.filter((p) => p != pieceTransforms);
+                      pieceTransforms
+                      |> List.fold_left(
+                           (found, piece) =>
+                             found
+                             /* try to offset piece */
+                             || piece
+                             |> Board.reduce(
+                                  (found, offsetX, offsetY, _) =>
+                                    found
+                                    || {
+                                      /* print_endline(string_of_int(List.length(newPieces))); */
+                                      /* try to insert piece */
+                                      let piecePos = (x - offsetX, y - offsetY);
+                                      let ok = Board.insert(board, piece, piecePos);
+                                      if (! ok) {
+                                        false
+                                      } else {
+                                        /* recurse */
+                                        let found = solve(board, newPieces);
+                                        Board.remove(board, piece, piecePos);
+                                        found
+                                      }
+                                    },
+                                  found
+                                ),
+                           found
+                         )
                     },
                   found
                 )
            },
          false
        )
-  }
-and forEachPosition = (found, board, piece, availablePieces) =>
-  board
-  |> Board.reduce(
-       (found, x, y, value) =>
-         if (found) {
-           true
-         } else if
-           /* skip position right away if not empty */
-           (value != Board.Empty) {
-           false
-         } else {
-           /* try to insert piece at current pos */
-           let ok = Board.insert(board, piece, (x, y));
-           if (ok) {
-             /* check if the board can already be discarded */
-             let isPossible = isPossibleBoard(board, availablePieces);
-             let found =
-               if (! isPossible) {
-                 /* Js.log("OUT!"); */
-                 false
-               } else {
-                 /* recurse */
-                 itCount := itCount^ + 1;
-                 if (itCount^ mod 10000 == 0) {
-                   print_endline("pieces left: " ++ string_of_int(List.length(availablePieces)))
-                 } else {
-                   ()
-                 };
-                 solve(board, availablePieces)
-               };
-             Board.remove(board, piece, (x, y));
-             found
-           } else {
-             false
-           }
-         },
-       found
-     );
+  };
